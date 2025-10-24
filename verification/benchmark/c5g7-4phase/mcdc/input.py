@@ -11,7 +11,7 @@ lib = h5py.File("MGXS-C5G7.h5", "r")
 
 # Setter
 def set_mat(mat):
-    return mcdc.material(
+    return mcdc.MaterialMG(
         capture=mat["capture"][:],
         scatter=mat["scatter"][:],
         fission=mat["fission"][:],
@@ -19,8 +19,8 @@ def set_mat(mat):
         nu_d=mat["nu_d"][:],
         chi_p=mat["chi_p"][:],
         chi_d=mat["chi_d"][:],
-        speed=mat["speed"],
-        decay=mat["decay"],
+        speed=mat["speed"][:],
+        decay_rate=mat["decay"][:],
     )
 
 
@@ -88,19 +88,19 @@ cr3_velocities[:, 2] = (cr3_top[1:] - cr3_top[:-1]) / cr3_durations
 cr4_velocities[:, 2] = (cr4_top[1:] - cr4_top[:-1]) / cr4_durations
 
 # Surfaces
-cy = mcdc.surface("cylinder-z", center=[0.0, 0.0], radius=radius)
+cy = mcdc.Surface.CylinderZ(center=[0.0, 0.0], radius=radius)
 # Control rod top and bottom tips
-z1_top = mcdc.surface("plane-z", z=cr1_top[0])
-z1_bottom = mcdc.surface("plane-z", z=cr1_bottom[0])
-z2_top = mcdc.surface("plane-z", z=cr2_top[0])
-z2_bottom = mcdc.surface("plane-z", z=cr2_bottom[0])
-z3_top = mcdc.surface("plane-z", z=cr3_top[0])
-z3_bottom = mcdc.surface("plane-z", z=cr3_bottom[0])
-z4_top = mcdc.surface("plane-z", z=cr4_top[0])
-z4_bottom = mcdc.surface("plane-z", z=cr4_bottom[0])
+z1_top = mcdc.Surface.PlaneZ(z=cr1_top[0])
+z1_bottom = mcdc.Surface.PlaneZ(z=cr1_bottom[0])
+z2_top = mcdc.Surface.PlaneZ(z=cr2_top[0])
+z2_bottom = mcdc.Surface.PlaneZ(z=cr2_bottom[0])
+z3_top = mcdc.Surface.PlaneZ(z=cr3_top[0])
+z3_bottom = mcdc.Surface.PlaneZ(z=cr3_bottom[0])
+z4_top = mcdc.Surface.PlaneZ(z=cr4_top[0])
+z4_bottom = mcdc.Surface.PlaneZ(z=cr4_bottom[0])
 # Fuel top
 #   (Bottom is bounded by the universe cell)
-zf = mcdc.surface("plane-z", z=0.5 * core_height)
+zf = mcdc.Surface.PlaneZ(z=0.5 * core_height)
 
 # Move the control tips
 z1_top.move(cr1_velocities, cr1_durations)
@@ -113,42 +113,42 @@ z4_top.move(cr4_velocities, cr4_durations)
 z4_bottom.move(cr4_velocities, cr4_durations)
 
 # Fission chamber pin
-fc = mcdc.cell(-cy, mat_fc)
-mod = mcdc.cell(+cy, mat_mod)
-fission_chamber = mcdc.universe([fc, mod])
+fc = mcdc.Cell(-cy, mat_fc)
+mod = mcdc.Cell(+cy, mat_mod)
+fission_chamber = mcdc.Universe(cells=[fc, mod])
 
 # Fuel rods
-uo2 = mcdc.cell(-cy & -zf, mat_uo2)
-mox4 = mcdc.cell(-cy & -zf, mat_mox43)
-mox7 = mcdc.cell(-cy & -zf, mat_mox7)
-mox8 = mcdc.cell(-cy & -zf, mat_mox87)
-moda = mcdc.cell(-cy & +zf, mat_mod)  # Water above pin
-fuel_uo2 = mcdc.universe([uo2, mod, moda])
-fuel_mox43 = mcdc.universe([mox4, mod, moda])
-fuel_mox7 = mcdc.universe([mox7, mod, moda])
-fuel_mox87 = mcdc.universe([mox8, mod, moda])
+uo2 = mcdc.Cell(-cy & -zf, mat_uo2)
+mox4 = mcdc.Cell(-cy & -zf, mat_mox43)
+mox7 = mcdc.Cell(-cy & -zf, mat_mox7)
+mox8 = mcdc.Cell(-cy & -zf, mat_mox87)
+moda = mcdc.Cell(-cy & +zf, mat_mod)  # Water above pin
+fuel_uo2 = mcdc.Universe(cells=[uo2, mod, moda])
+fuel_mox43 = mcdc.Universe(cells=[mox4, mod, moda])
+fuel_mox7 = mcdc.Universe(cells=[mox7, mod, moda])
+fuel_mox87 = mcdc.Universe(cells=[mox8, mod, moda])
 
 # Control rods and guide tubes
-cr1 = mcdc.cell(-cy & +z1_bottom & -z1_top, mat_cr)
-gt1_lower = mcdc.cell(-cy & -z1_bottom, mat_gt)
-gt1_upper = mcdc.cell(-cy & +z1_top, mat_gt)
+cr1 = mcdc.Cell(-cy & +z1_bottom & -z1_top, mat_cr)
+gt1_lower = mcdc.Cell(-cy & -z1_bottom, mat_gt)
+gt1_upper = mcdc.Cell(-cy & +z1_top, mat_gt)
 #
-cr2 = mcdc.cell(-cy & +z2_bottom & -z2_top, mat_cr)
-gt2_lower = mcdc.cell(-cy & -z2_bottom, mat_gt)
-gt2_upper = mcdc.cell(-cy & +z2_top, mat_gt)
+cr2 = mcdc.Cell(-cy & +z2_bottom & -z2_top, mat_cr)
+gt2_lower = mcdc.Cell(-cy & -z2_bottom, mat_gt)
+gt2_upper = mcdc.Cell(-cy & +z2_top, mat_gt)
 #
-cr3 = mcdc.cell(-cy & +z3_bottom & -z3_top, mat_cr)
-gt3_lower = mcdc.cell(-cy & -z3_bottom, mat_gt)
-gt3_upper = mcdc.cell(-cy & +z3_top, mat_gt)
+cr3 = mcdc.Cell(-cy & +z3_bottom & -z3_top, mat_cr)
+gt3_lower = mcdc.Cell(-cy & -z3_bottom, mat_gt)
+gt3_upper = mcdc.Cell(-cy & +z3_top, mat_gt)
 #
-cr4 = mcdc.cell(-cy & +z4_bottom & -z4_top, mat_cr)
-gt4_lower = mcdc.cell(-cy & -z4_bottom, mat_gt)
-gt4_upper = mcdc.cell(-cy & +z4_top, mat_gt)
+cr4 = mcdc.Cell(-cy & +z4_bottom & -z4_top, mat_cr)
+gt4_lower = mcdc.Cell(-cy & -z4_bottom, mat_gt)
+gt4_upper = mcdc.Cell(-cy & +z4_top, mat_gt)
 #
-control_rod1 = mcdc.universe([cr1, gt1_lower, gt1_upper, mod])
-control_rod2 = mcdc.universe([cr2, gt2_lower, gt2_upper, mod])
-control_rod3 = mcdc.universe([cr3, gt3_lower, gt3_upper, mod])
-control_rod4 = mcdc.universe([cr4, gt4_lower, gt4_upper, mod])
+control_rod1 = mcdc.Universe(cells=[cr1, gt1_lower, gt1_upper, mod])
+control_rod2 = mcdc.Universe(cells=[cr2, gt2_lower, gt2_upper, mod])
+control_rod3 = mcdc.Universe(cells=[cr3, gt3_lower, gt3_upper, mod])
+control_rod4 = mcdc.Universe(cells=[cr4, gt4_lower, gt4_upper, mod])
 
 # =============================================================================
 # Fuel lattices
@@ -158,7 +158,7 @@ control_rod4 = mcdc.universe([cr4, gt4_lower, gt4_upper, mod])
 u = fuel_uo2
 c = control_rod1
 f = fission_chamber
-lattice_1 = mcdc.lattice(
+lattice_1 = mcdc.Lattice(
     x=[-pitch * 17 / 2, pitch, 17],
     y=[-pitch * 17 / 2, pitch, 17],
     universes=[
@@ -188,7 +188,7 @@ m = fuel_mox7
 n = fuel_mox87
 c = control_rod2
 f = fission_chamber
-lattice_2 = mcdc.lattice(
+lattice_2 = mcdc.Lattice(
     x=[-pitch * 17 / 2, pitch, 17],
     y=[-pitch * 17 / 2, pitch, 17],
     universes=[
@@ -218,7 +218,7 @@ m = fuel_mox7
 n = fuel_mox87
 c = control_rod3
 f = fission_chamber
-lattice_3 = mcdc.lattice(
+lattice_3 = mcdc.Lattice(
     x=[-pitch * 17 / 2, pitch, 17],
     y=[-pitch * 17 / 2, pitch, 17],
     universes=[
@@ -246,7 +246,7 @@ lattice_3 = mcdc.lattice(
 u = fuel_uo2
 c = control_rod4
 f = fission_chamber
-lattice_4 = mcdc.lattice(
+lattice_4 = mcdc.Lattice(
     x=[-pitch * 17 / 2, pitch, 17],
     y=[-pitch * 17 / 2, pitch, 17],
     universes=[
@@ -275,43 +275,43 @@ lattice_4 = mcdc.lattice(
 # =============================================================================
 
 # Surfaces
-x0 = mcdc.surface("plane-x", x=0.0, bc="reflective")
-x1 = mcdc.surface("plane-x", x=pitch * 17)
-x2 = mcdc.surface("plane-x", x=pitch * 17 * 2)
-x3 = mcdc.surface("plane-x", x=pitch * 17 * 3, bc="vacuum")
+x0 = mcdc.Surface.PlaneX(x=0.0, boundary_condition="reflective")
+x1 = mcdc.Surface.PlaneX(x=pitch * 17)
+x2 = mcdc.Surface.PlaneX(x=pitch * 17 * 2)
+x3 = mcdc.Surface.PlaneX(x=pitch * 17 * 3, boundary_condition="vacuum")
 
-y0 = mcdc.surface("plane-y", y=-pitch * 17 * 3, bc="vacuum")
-y1 = mcdc.surface("plane-y", y=-pitch * 17 * 2)
-y2 = mcdc.surface("plane-y", y=-pitch * 17)
-y3 = mcdc.surface("plane-y", y=0.0, bc="reflective")
+y0 = mcdc.Surface.PlaneY(y=-pitch * 17 * 3, boundary_condition="vacuum")
+y1 = mcdc.Surface.PlaneY(y=-pitch * 17 * 2)
+y2 = mcdc.Surface.PlaneY(y=-pitch * 17)
+y3 = mcdc.Surface.PlaneY(y=0.0, boundary_condition="reflective")
 
-z0 = mcdc.surface("plane-z", z=-(core_height / 2 + reflector_thickness), bc="vacuum")
-z1 = mcdc.surface("plane-z", z=-(core_height / 2))
-z2 = mcdc.surface("plane-z", z=(core_height / 2 + reflector_thickness), bc="vacuum")
+z0 = mcdc.Surface.PlaneZ(z=-(core_height / 2 + reflector_thickness), boundary_condition="vacuum")
+z1 = mcdc.Surface.PlaneZ(z=-(core_height / 2))
+z2 = mcdc.Surface.PlaneZ(z=(core_height / 2 + reflector_thickness), boundary_condition="vacuum")
 
 # Assembly cells
 center = np.array([pitch * 17 / 2, -pitch * 17 / 2, 0.0])
-assembly_1 = mcdc.cell(+x0 & -x1 & +y2 & -y3 & +z1 & -z2, lattice_1, translation=center)
+assembly_1 = mcdc.Cell(+x0 & -x1 & +y2 & -y3 & +z1 & -z2, lattice_1, translation=center)
 
 center += np.array([pitch * 17, 0.0, 0.0])
-assembly_2 = mcdc.cell(+x1 & -x2 & +y2 & -y3 & +z1 & -z2, lattice_2, translation=center)
+assembly_2 = mcdc.Cell(+x1 & -x2 & +y2 & -y3 & +z1 & -z2, lattice_2, translation=center)
 
 center += np.array([-pitch * 17, -pitch * 17, 0.0])
-assembly_3 = mcdc.cell(+x0 & -x1 & +y1 & -y2 & +z1 & -z2, lattice_3, translation=center)
+assembly_3 = mcdc.Cell(+x0 & -x1 & +y1 & -y2 & +z1 & -z2, lattice_3, translation=center)
 
 center += np.array([pitch * 17, 0.0, 0.0])
-assembly_4 = mcdc.cell(+x1 & -x2 & +y1 & -y2 & +z1 & -z2, lattice_4, translation=center)
+assembly_4 = mcdc.Cell(+x1 & -x2 & +y1 & -y2 & +z1 & -z2, lattice_4, translation=center)
 
 # Bottom reflector cell
-reflector_bottom = mcdc.cell(+x0 & -x3 & +y0 & -y3 & +z0 & -z1, mat_mod)
+reflector_bottom = mcdc.Cell(+x0 & -x3 & +y0 & -y3 & +z0 & -z1, mat_mod)
 
 # Side reflectors
-reflector_south = mcdc.cell(+x0 & -x3 & +y0 & -y1 & +z1 & -z2, mat_mod)
-reflector_east = mcdc.cell(+x2 & -x3 & +y1 & -y3 & +z1 & -z2, mat_mod)
+reflector_south = mcdc.Cell(+x0 & -x3 & +y0 & -y1 & +z1 & -z2, mat_mod)
+reflector_east = mcdc.Cell(+x2 & -x3 & +y1 & -y3 & +z1 & -z2, mat_mod)
 
 # Root universe
-mcdc.universe(
-    [
+mcdc.simulation.set_root_universe(
+    cells=[
         assembly_1,
         assembly_2,
         assembly_3,
@@ -320,7 +320,6 @@ mcdc.universe(
         reflector_south,
         reflector_east,
     ],
-    root=True,
 )
 
 # =============================================================================
@@ -329,22 +328,19 @@ mcdc.universe(
 # Throughout the active center pin of Assembly four, at highest energy,
 # for the first 15 seconds
 
-energy = np.zeros(7)
-energy[0] = 1.0
-
-source = mcdc.source(
+source = mcdc.Source(
     x=np.array([pitch * 17 * 3 / 2] * 2) + np.array([-pitch / 2, +pitch / 2]),
     y=np.array([-pitch * 17 * 3 / 2] * 2) + np.array([-pitch / 2, +pitch / 2]),
     z=[-core_height / 2, core_height / 2],
+    energy_group=0,
     time=[0.0, 15.0],
-    energy=energy,
 )
 
 # =============================================================================
-# Set tally, setting, and run mcdc
+# Set tallies, settings, and run MC/DC
 # =============================================================================
 
-# Tally
+# Tallies
 Nt = 200
 Nx = 17 * 2
 Ny = 17 * 2
@@ -353,10 +349,13 @@ t = np.linspace(0.0, 20.0, Nt + 1)
 x = np.linspace(0.0, pitch * 17 * 2, Nx + 1)
 y = np.linspace(-pitch * 17 * 2, 0.0, Ny + 1)
 z = np.linspace(-core_height / 2, core_height / 2, Nz + 1)
-mcdc.tally.mesh_tally(scores=["fission"], x=x, y=y, z=z, t=t)
+mesh = mcdc.MeshStructured(x=x, y=y, z=z)
+mcdc.TallyMesh(mesh=mesh, scores=["fission"], time=t)
 
-# Setting
-mcdc.setting(N_particle=1e6, N_batch=30, active_bank_buff=10000)
+# Settings
+mcdc.settings.N_particle = int(1e6)
+mcdc.settings.N_batch = 30
+mcdc.settings.active_bank_buffer = 10000
 
 # Run
 mcdc.run()
