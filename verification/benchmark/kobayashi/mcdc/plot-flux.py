@@ -8,7 +8,7 @@ import shutil
 # Get results
 with h5py.File("output_4.h5", "r") as f:
     fluxes = f["tallies/mesh_tally_0/flux/mean"][()]
-    densities = f["tallies/mesh_tally_1/density/mean"][()]
+    densities = f["tallies/global_tally_1/density/mean"][()]
     x = f["tallies/mesh_tally_0/grid/x"][()]
     y = f["tallies/mesh_tally_0/grid/y"][()]
     z = f["tallies/mesh_tally_0/grid/z"][()]
