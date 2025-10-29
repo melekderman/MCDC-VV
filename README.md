@@ -1,1 +1,1 @@
-Verification suite for [MC/DC](https://github.com/CEMeNT-PSAAP/MCDC)
+Verification and validation suites for [MC/DC](https://github.com/CEMeNT-PSAAP/MCDC)
