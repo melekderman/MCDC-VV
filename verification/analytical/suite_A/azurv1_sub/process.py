@@ -27,7 +27,7 @@ for i, N_particle in enumerate(N_particle_list):
     with h5py.File("output_%i.h5" % (int(N_particle)), "r") as f:
         x = f["tallies/mesh_tally_0/grid/x"][:]
         dx = x[1:] - x[:-1]
-        t = f["tallies/mesh_tally_0/grid/t"][:]
+        t = f["tallies/mesh_tally_0/grid/time"][:]
         dt = t[1:] - t[:-1]
         K = len(t) - 1
 

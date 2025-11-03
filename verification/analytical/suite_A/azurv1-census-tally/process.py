@@ -21,31 +21,17 @@ error = np.zeros(len(N_particle_list))
 
 error_max = np.zeros(len(N_particle_list))
 
-# The grids
-x = np.linspace(-20.5, 20.5, 202)
-t = np.linspace(0.0, 20.0, 21)
-dx = x[1:] - x[:-1]
-x_mid = 0.5 * (x[:-1] + x[1:])
-dt = t[1:] - t[:-1]
-J = len(dx)
-K = len(dt)
-
 # Calculate error
 for i, N_particle in enumerate(N_particle_list):
-    phi = np.zeros((K, J))
-    N_census = 4
-    N_batch = 10
-    for i_census in range(N_census):
-        for i_batch in range(N_batch):
-            with h5py.File(
-                "output_%i-batch_%i-census_%i.h5"
-                % (int(N_particle), i_batch, i_census),
-                "r",
-            ) as f:
-                phi[5 * i_census : 5 * i_census + 5, :] += f[
-                    "tallies/mesh_tally_0/flux/score"
-                ][:]
-        phi[5 * i_census : 5 * i_census + 5] /= N_batch
+    # Get results
+    with h5py.File("output_%i.h5" % (int(N_particle)), "r") as f:
+        x = f["tallies/mesh_tally_0/grid/x"][:]
+        dx = x[1:] - x[:-1]
+        t = f["tallies/mesh_tally_0/grid/time"][:]
+        dt = t[1:] - t[:-1]
+        K = len(t) - 1
+
+        phi = f["tallies/mesh_tally_0/flux/mean"][:]
 
     # Normalize
     for k in range(K):

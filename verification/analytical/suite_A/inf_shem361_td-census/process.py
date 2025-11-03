@@ -27,17 +27,17 @@ error_max_n = np.zeros(len(N_particle_list))
 # Calculate error
 for i, N_particle in enumerate(N_particle_list):
     # Get results
-    with np.load("../../data/MGXS-SHEM361.npz") as data:
+    with np.load("SHEM-361.npz") as data:
         E = data["E"]
         G = data["G"]
         speed = data["v"]
         E_mid = 0.5 * (E[1:] + E[:-1])
         dE = E[1:] - E[:-1]
     with h5py.File("output_%i.h5" % (int(N_particle)), "r") as f:
-        t = f["tallies/mesh_tally_0/grid/t"][:]
+        t = f["tallies/global_tally_0/grid/time"][:]
         dt = t[1:] - t[:-1]
         K = len(t) - 1
-        phi = f["tallies/mesh_tally_0/flux/mean"][:]
+        phi = f["tallies/global_tally_0/flux/mean"][:]
 
     # Neutron density
     n = np.zeros(K)

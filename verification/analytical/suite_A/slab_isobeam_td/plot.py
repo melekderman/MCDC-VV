@@ -10,13 +10,13 @@ output = sys.argv[1]
 # Reference solution
 with h5py.File(output, "r") as f:
     x = f["tallies/mesh_tally_0/grid/x"][:]
-    t = f["tallies/mesh_tally_0/grid/t"][:]
+    t = f["tallies/mesh_tally_0/grid/time"][:]
 phi_ref = reference(x, t)
 
 # Get results
 with h5py.File(output, "r") as f:
     x = f["tallies/mesh_tally_0/grid/x"][:]
-    t = f["tallies/mesh_tally_0/grid/t"][:]
+    t = f["tallies/mesh_tally_0/grid/time"][:]
     dx = x[1] - x[0]
     x_mid = 0.5 * (x[:-1] + x[1:])
     dt = t[1:] - t[:-1]

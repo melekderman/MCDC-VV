@@ -3,7 +3,7 @@ import numpy as np
 
 def reference():
     # Load material data
-    with np.load("../../data/MGXS-SHEM361.npz") as data:
+    with np.load("SHEM-361.npz") as data:
         SigmaT = data["SigmaT"]
         SigmaC = data["SigmaC"]
         SigmaS = data["SigmaS"]

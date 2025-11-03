@@ -23,12 +23,12 @@ error_max = np.zeros(len(N_particle_list))
 for k, N_particle in enumerate(N_particle_list):
     # Get results
     with h5py.File("output_%i.h5" % (int(N_particle)), "r") as f:
-        x = f["tallies/mesh_tally_0/grid/x"][:]
-        dx = x[1:] - x[:-1]
+        z = f["tallies/mesh_tally_0/grid/z"][:]
+        dz = z[1:] - z[:-1]
         phi = f["tallies/mesh_tally_0/flux/mean"][:]
 
     # Normalize
-    phi = phi / dx
+    phi = phi / dz
 
     # Get error
     error[k] = tool.rerror(phi, phi_ref)
