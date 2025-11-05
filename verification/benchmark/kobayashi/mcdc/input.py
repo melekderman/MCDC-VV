@@ -63,10 +63,7 @@ mcdc.Source(
 
 # Tallies
 time_grid = np.linspace(0.0, 200.0, 101)
-mcdc.TallyCell(cell=source_cell, scores=["flux"])
-mcdc.TallyCell(cell=void_cell, scores=["flux"])
-mcdc.TallyCell(cell=shield_cell, scores=["flux"])
-mesh = mcdc.MeshUniform(x=(0.0, 2.0, 30), y=(0.0, 2.0, 50))
+mesh = mcdc.MeshUniform(x=(0.0, 1.0, 60), y=(0.0, 1.0, 100), z=(0.0, 1.0, 60))
 mcdc.TallyMesh(mesh=mesh, scores=["flux"], time=time_grid)
 mcdc.TallyGlobal(scores=['density'], time=time_grid)
 
