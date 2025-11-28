@@ -28,8 +28,8 @@ The problems include:
 
 ### [Continuous energy](https://github.com/CEMeNT-PSAAP/MCDC-VV/tree/master/verification/benchmark/continuous_energy)
 
-Verification includes observing the $`N^{-0.5}`$ convergence in the relative differences of the two codes as the number of source particles $`N`$ is increased.
+Verification includes observing the agreement in the results of the two codes.
 The problems include:
-- Temporal spectrum evolutions of neutron-pulsed pincells with various materials
+- Temporal spectrum evolutions of neutron-pulsed pincells with various materials:
   - UO2 and Water
   - UO2 and Helium
